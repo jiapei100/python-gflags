@@ -143,7 +143,7 @@ def StrOrUnicode(value):
   try:
     return str(value)
   except UnicodeEncodeError:
-    return str(value)
+    return unicode(value)
 
 
 # TODO(vrusinov): this function must die.
@@ -359,7 +359,7 @@ def FlagDictToArgs(flag_map):
   Yields:
     sequence of string suitable for a subprocess execution.
   """
-  for key, value in flag_map.items():
+  for key, value in flag_map.iteritems():
     if value is None:
       yield '--%s' % key
     elif isinstance(value, bool):
@@ -367,13 +367,13 @@ def FlagDictToArgs(flag_map):
         yield '--%s' % key
       else:
         yield '--no%s' % key
-    elif isinstance(value, (bytes, type(''))):
+    elif isinstance(value, (bytes, type(u''))):
       # We don't want strings to be handled like python collections.
       yield '--%s=%s' % (key, value)
     else:
       # Now we attempt to deal with collections.
       try:
-        yield '--%s=%s' % (key, ','.join(map(str, value)))
+        yield '--%s=%s' % (key, ','.join(itertools.imap(str, value)))
       except TypeError:
         # Default case.
         yield '--%s=%s' % (key, value)

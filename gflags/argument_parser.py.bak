@@ -30,7 +30,7 @@
 
 """Contains base classes used to parse and convert arguments."""
 
-import io
+import cStringIO
 import csv
 import string
 
@@ -78,7 +78,7 @@ class _ArgumentParserCache(type):
         return type.__call__(cls, *args)
 
 
-class ArgumentParser(object, metaclass=_ArgumentParserCache):
+class ArgumentParser(object):
   """Base class used to parse and convert arguments.
 
   The Parse() method checks to make sure that the string argument is a
@@ -93,6 +93,7 @@ class ArgumentParser(object, metaclass=_ArgumentParserCache):
   and shared between flags. Initializer arguments are allowed, but all
   member variables must be derived from initializer arguments only.
   """
+  __metaclass__ = _ArgumentParserCache
 
   syntactic_help = ''
 
@@ -324,11 +325,11 @@ class CsvListSerializer(ArgumentSerializer):
 
   def Serialize(self, value):
     """Serialize a list as a string, if possible, or as a unicode string."""
-    output = io.StringIO()
+    output = cStringIO.StringIO()
     writer = csv.writer(output)
 
     # csv.writer doesn't accept unicode, so we convert to UTF-8.
-    encoded_value = [str(x).encode('utf-8') for x in value]
+    encoded_value = [unicode(x).encode('utf-8') for x in value]
     writer.writerow(encoded_value)
 
     # We need the returned value to be pure ascii or Unicodes so that

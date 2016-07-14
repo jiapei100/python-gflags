@@ -207,7 +207,7 @@ class MutualExclusionValidator(DictionaryValidator):
                ('Exactly' if required else 'At most', ', '.join(flag_names)))
 
     def Checker(flag_dict):
-      flag_count = sum(1 for val in list(flag_dict.values()) if val is not None)
+      flag_count = sum(1 for val in flag_dict.values() if val is not None)
       return flag_count == 1 or (not required and flag_count == 0)
 
     super(MutualExclusionValidator, self).__init__(flag_names, Checker, message)
